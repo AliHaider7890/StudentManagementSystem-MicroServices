@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+    http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="Voucher Report" pageWidth="595" pageHeight="842"
+              columnWidth="555" leftMargin="20" rightMargin="20"
+              topMargin="20" bottomMargin="20">
+
+    <!-- FIELDS DECLARATION - IMPORTANT! -->
+    <field name="studentId" class="java.lang.Long"/>
+    <field name="studentName" class="java.lang.String"/>
+    <field name="email" class="java.lang.String"/>
+    <field name="courseName" class="java.lang.String"/>
+    <field name="coursePrice" class="java.lang.Double"/>
+    <field name="totalAmount" class="java.lang.Double"/>
+<!--    private Long studentId;-->
+<!--    private String studentName;-->
+<!--    private String email;-->
+<!--    private String courseName;-->
+<!--    private Double coursePrice;-->
+<!--    private Double totalAmount;-->
+
+    <!-- TITLE -->
+    <title>
+        <band height="50">
+            <staticText>
+                <reportElement x="0" y="10" width="555" height="30"/>
+                <textElement textAlignment="Center">
+                    <font size="18" isBold="true"/>
+                </textElement>
+                <text><![CDATA[STUDENT VOUCHER]]></text>
+            </staticText>
+        </band>
+    </title>
+
+    <!-- STUDENT DETAILS -->
+    <pageHeader>
+        <band height="80">
+            <staticText>
+                <reportElement x="0" y="10" width="100" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[Student ID:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="100" y="10" width="150" height="20"/>
+                <textFieldExpression><![CDATA[$F{studentId}]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="0" y="35" width="100" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[Student Name:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="100" y="35" width="300" height="20"/>
+                <textFieldExpression><![CDATA[$F{studentName}]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="0" y="60" width="100" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <text><![CDATA[Email:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="100" y="60" width="300" height="20"/>
+                <textFieldExpression><![CDATA[$F{email}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageHeader>
+
+    <!-- COLUMN HEADERS -->
+    <columnHeader>
+        <band height="30">
+            <staticText>
+                <reportElement x="0" y="5" width="350" height="20"/>
+                <textElement><font isBold="true" isUnderline="true"/></textElement>
+                <text><![CDATA[Course Name]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="400" y="5" width="100" height="20"/>
+                <textElement><font isBold="true" isUnderline="true"/></textElement>
+                <text><![CDATA[Price ($)]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <!-- COURSE DETAILS -->
+    <detail>
+        <band height="25">
+            <textField>
+                <reportElement x="0" y="0" width="350" height="20"/>
+                <textFieldExpression><![CDATA[$F{courseName}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0.00">
+                <reportElement x="400" y="0" width="100" height="20"/>
+                <textFieldExpression><![CDATA[$F{coursePrice}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+    <!-- TOTAL -->
+    <summary>
+        <band height="40">
+            <line>
+                <reportElement x="350" y="0" width="200" height="1"/>
+            </line>
+            <staticText>
+                <reportElement x="350" y="10" width="100" height="20"/>
+                <textElement><font isBold="true" size="12"/></textElement>
+                <text><![CDATA[Total Amount:]]></text>
+            </staticText>
+            <textField pattern="$ #,##0.00">
+                <reportElement x="450" y="10" width="100" height="20"/>
+                <textElement><font isBold="true" size="12"/></textElement>
+                <textFieldExpression><![CDATA[$F{totalAmount}]]></textFieldExpression>
+            </textField>
+        </band>
+    </summary>
+
+</jasperReport>
