@@ -1,0 +1,137 @@
+# services:
+#   # 1. Service Registry
+#   service-registry:
+#     build: ./service-registry
+#     container_name: service-registry
+#     ports:
+#       - "8761:8761"
+#     networks:
+#       - microservices-network
+#     restart: on-failure
+
+#   # 2. Course Service
+#   course-service:
+#     build: ./course-service
+#     container_name: course-service
+#     ports:
+#       - "9092:9092"
+#     networks:
+#       - microservices-network
+#     depends_on:
+#       service-registry:
+#         condition: service_started
+#     environment:
+#       - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/employee_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+#       - SPRING_DATASOURCE_USERNAME=root
+#       - SPRING_DATASOURCE_PASSWORD=root
+#       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+#       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+#       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+#     restart: on-failure
+
+#   # 3. Teacher Service
+#   teacher-service:
+#     build: ./teacher-service
+#     container_name: teacher-service
+#     ports:
+#       - "9091:9091"
+#     networks:
+#       - microservices-network
+#     depends_on:
+#       service-registry:
+#         condition: service_started
+#     environment:
+#       - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/employee_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+#       - SPRING_DATASOURCE_USERNAME=root
+#       - SPRING_DATASOURCE_PASSWORD=root
+#       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+#       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+#       - EUREKA_INSTANCE_HOSTNAME=teacher-service
+#       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+#     restart: on-failure
+
+#   # 4. API Gateway
+#   api-gateway:
+#     build: ./apigateway
+#     container_name: api-gateway
+#     ports:
+#       - "8083:8083"
+#     networks:
+#       - microservices-network
+#     depends_on:
+#       service-registry:
+#         condition: service_started
+#       course-service:
+#         condition: service_started
+#       teacher-service:
+#         condition: service_started
+#     environment:
+#       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+#       - SPRING_CLOUD_GATEWAY_DISCOVERY_LOCATOR_ENABLED=true
+#       - SPRING_CLOUD_GATEWAY_DISCOVERY_LOCATOR_LOWER_CASE_SERVICE_ID=true
+#     restart: on-failure
+
+# networks:
+#   microservices-network:
+#     driver: bridge
+
+# # Optional: Add volume for logs
+# volumes:
+#   logs:
+#     driver: local
+version: '3.8'
+
+services:
+
+  serviceregistry:
+    build: ./service-registry
+    container_name: service-registry
+    ports:
+      - "8761:8761"
+    networks:
+      - micro-net
+
+  course-service:
+    build: ./course-service
+    container_name: course-service
+    ports:
+      - "9092:9092"
+    depends_on:
+      - serviceregistry
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://192.168.100.37:3306/employee_db?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://serviceregistry:8761/eureka/ # eureka.client.service-url.defaultZone=http://serviceregistry:8761/eureka/
+    networks:
+      - micro-net
+
+  teacher-service:
+    build: ./teacher-service
+    container_name: teacher-service
+    ports:
+      - "9091:9091"
+    depends_on:
+      - serviceregistry
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://192.168.100.37:3306/employee_db?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://serviceregistry:8761/eureka/
+    networks:
+      - micro-net
+
+  apigateway:
+    build: ./apigateway
+    container_name: apigateway
+    ports:
+      - "8083:8083"
+    depends_on:
+      - serviceregistry
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://serviceregistry:8761/eureka/
+    networks:
+      - micro-net
+
+networks:
+  micro-net:
