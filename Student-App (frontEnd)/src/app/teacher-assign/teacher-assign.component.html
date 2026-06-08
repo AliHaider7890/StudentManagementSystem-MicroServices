@@ -1,0 +1,76 @@
+<div class="assign-container">
+  <div class="header">
+    <h2>👨‍🏫 Assign Teacher to Course</h2>
+    <button (click)="goBack()" class="back-btn">← Back to Admin</button>
+  </div>
+
+  <div class="assign-form">
+    <h3>📝 New Assignment</h3>
+    
+    @if (error) {
+      <div class="error-message">{{ error }}</div>
+    }
+    @if (success) {
+      <div class="success-message">{{ success }}</div>
+    }
+    
+    <div class="form-group">
+      <label>Teacher Assignment ID:</label>
+      <input 
+        type="number" 
+        [(ngModel)]="selectedAssignId" 
+        placeholder="Enter Assignment ID"
+        class="form-control">
+    </div>
+    
+    <div class="form-group">
+      <label>Select Course:</label>
+      <select [(ngModel)]="selectedCourseId" class="form-control">
+        <option value="0">-- Select Course --</option>
+        @for (course of courses; track course.id) {
+          <option [value]="course.id">
+            {{ course.courseName }} (ID: {{ course.id }})
+          </option>
+        }
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label>Select Teacher:</label>
+      <select [(ngModel)]="selectedTeacherId" class="form-control">
+        <option value="0">-- Select Teacher --</option>
+        @for (teacher of teachers; track teacher.id) {
+          <option [value]="teacher.id">
+            {{ teacher.name }} - {{ teacher.email }} (ID: {{ teacher.id }})
+          </option>
+        }
+      </select>
+    </div>
+    
+    <button (click)="assignTeacherToCourse()" [disabled]="loading" class="assign-btn">
+      {{ loading ? 'Assigning...' : '✅ Assign Teacher to Course' }}
+    </button>
+  </div>
+
+  <!-- Current Assignments List -->
+  <div class="assignments-list">
+    <h3>📋 Current Teacher-Course Assignments</h3>
+    
+    @if (teacherAssignCourses.length === 0) {
+      <div class="no-data">No assignments found</div>
+    }
+    
+    @if (teacherAssignCourses.length > 0) {
+      <div class="assignments-grid">
+        @for (assignment of teacherAssignCourses; track assignment.id) {
+          <div class="assignment-card">
+            <div class="assignment-id">ID: {{ assignment.id }}</div>
+            <div class="course-name">📖 Course: {{ assignment.courseName }}</div>
+            <div class="teacher-name">👨‍🏫 Teacher: {{ assignment.teacherName }}</div>
+            <div class="teacher-id">🆔 Teacher ID: {{ assignment.teacherId }}</div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

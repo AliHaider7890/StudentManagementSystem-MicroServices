@@ -1,0 +1,56 @@
+<div class="timetable-container">
+  <div class="header">
+    <h2>📅 Course Timetable</h2>
+    <button (click)="goBack()" class="back-btn">← Back to Admin</button>
+  </div>
+
+  <div class="filter-section">
+    <select [(ngModel)]="selectedDay" (change)="filterByDay(selectedDay)" class="filter-select">
+      <option value="">All Days</option>
+      <option value="MONDAY">MONDAY</option>
+      <option value="TUESDAY">TUESDAY</option>
+      <option value="WEDNESDAY">WEDNESDAY</option>
+      <option value="THURSDAY">THURSDAY</option>
+      <option value="FRIDAY">FRIDAY</option>
+    </select>
+    <button (click)="resetFilter()" class="reset-btn">Reset</button>
+  </div>
+
+  @if (loading) {
+    <div class="loading">Loading timetable...</div>
+  }
+
+  @if (error) {
+    <div class="error-message">{{ error }}</div>
+  }
+
+  @if (!loading && filteredTimeTables.length === 0 && !error) {
+    <div class="no-data">No timetable entries found</div>
+  }
+
+  @if (!loading && filteredTimeTables.length > 0) {
+    <div class="timetable-list">
+      @for (entry of filteredTimeTables; track entry.id) {
+        <div class="timetable-card" [class.assigned]="entry.teacherAssignCourse !== null">
+          <div class="day-badge">{{ entry.day }}</div>
+          <div class="time-slot">
+            <span class="time">{{ formatTime(entry.startTime) }}</span>
+            <span> → </span>
+            <span class="time">{{ formatTime(entry.endTime) }}</span>
+          </div>
+          <div class="room-info">
+            🏠 Room: {{ entry.roomNo }}
+          </div>
+          @if (entry.teacherAssignCourse !== null) {
+            <div class="course-info">
+              <div>📖 Course: {{ entry.teacherAssignCourse.courseName }}</div>
+              <div>👨‍🏫 Teacher: {{ entry.teacherAssignCourse.teacherName }}</div>
+            </div>
+          } @else {
+            <div class="empty-slot">⏳ Available Slot - No Course Assigned</div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

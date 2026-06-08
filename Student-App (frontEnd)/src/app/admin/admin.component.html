@@ -1,0 +1,130 @@
+<div class="admin-container">
+  <div class="header">
+    <h2>Admin Dashboard</h2>
+    <div>
+      <button (click)="goToTimeTable()" class="timetable-btn">📅 TimeTable</button>
+      <button (click)="goToAssignSlot()" class="assign-slot-btn">📅 Assign Slot</button>
+      <button (click)="goToTeacherAssign()" class="teacher-assign-btn">👨‍🏫 Assign Teacher</button>
+      <button (click)="openDeleteModal()" class="delete-user-btn">🗑️ Delete User</button>
+      <button (click)="logout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- 🔥 SEARCH SECTION - EMAIL SEARCH -->
+  <div class="search-section">
+    <div class="search-bar">
+      <input 
+        type="text" 
+        [(ngModel)]="searchEmail"
+        (keyup.enter)="searchUsers()"
+        placeholder="🔍 Search users by email..."
+        class="search-input">
+      <button (click)="searchUsers()" class="search-btn">Search</button>
+      <button (click)="resetSearch()" class="reset-btn">Reset</button>
+    </div>
+  </div>
+
+  <!-- Create User Section -->
+  <div class="create-user-section">
+    <h3>➕ Create New User</h3>
+    
+    @if (error && !showDeleteModal) {
+      <div class="error-message">{{ error }}</div>
+    }
+    @if (success) {
+      <div class="success-message">{{ success }}</div>
+    }
+    
+    <div class="form-group">
+      <input type="text" [(ngModel)]="newUser.name" placeholder="Full Name" class="form-control">
+    </div>
+    
+    <div class="form-group">
+      <input type="email" [(ngModel)]="newUser.email" placeholder="Email" class="form-control">
+    </div>
+    
+    <div class="form-group">
+      <input type="password" [(ngModel)]="newUser.password" placeholder="Password" class="form-control">
+    </div>
+    
+    <div class="form-group">
+      <select #roleSelect (change)="onRoleChange(roleSelect.value)" class="form-control">
+        <option value="STUDENT">Student</option>
+        <option value="TEACHER">Teacher</option>
+        <option value="ADMIN">Admin</option>
+      </select>
+    </div>
+    
+    <button (click)="createUser()" [disabled]="loading" class="create-btn">
+      {{ loading ? 'Creating...' : 'Create User' }}
+    </button>
+  </div>
+
+  <!-- Users List Section -->
+  <div class="users-section">
+    <h3>📋 All Users ({{ users.length }})</h3>
+    
+    @if (loading) {
+      <div class="loading">Loading users...</div>
+    }
+    
+    @if (!loading && users.length > 0) {
+      <div class="table-responsive">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of users; track user.id) {
+              <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.name || '-' }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                  @if (user.roles?.[0]?.id === 1) {
+                    <span class="badge-admin">ADMIN</span>
+                  } @else if (user.roles?.[0]?.id === 2) {
+                    <span class="badge-teacher">TEACHER</span>
+                  } @else {
+                    <span class="badge-student">STUDENT</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+    
+    @if (!loading && users.length === 0 && !error) {
+      <div class="no-data">No users found</div>
+    }
+  </div>
+</div>
+
+<!-- Delete User Modal -->
+@if (showDeleteModal) {
+  <div class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>🗑️ Delete User</h3>
+        <button class="close-btn" (click)="closeDeleteModal()">✖</button>
+      </div>
+      <div class="modal-body">
+        <p>Enter User ID to delete:</p>
+        <input type="number" [(ngModel)]="deleteUserId" placeholder="Enter User ID" class="form-control">
+      </div>
+      <div class="modal-footer">
+        <button class="cancel-btn" (click)="closeDeleteModal()">Cancel</button>
+        <button class="confirm-delete-btn" (click)="deleteUser()" [disabled]="deleting">
+          {{ deleting ? 'Deleting...' : 'Confirm Delete' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

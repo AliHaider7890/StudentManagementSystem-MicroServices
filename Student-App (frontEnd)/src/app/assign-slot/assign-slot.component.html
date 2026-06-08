@@ -1,0 +1,74 @@
+<div class="assign-slot-container">
+  <div class="header">
+    <h2>📅 Assign Course to TimeTable Slot</h2>
+    <button (click)="goBack()" class="back-btn">← Back to Admin</button>
+  </div>
+
+  <div class="assign-form">
+    <h3>📝 New Slot Assignment</h3>
+    
+    @if (error) {
+      <div class="error-message">{{ error }}</div>
+    }
+    @if (success) {
+      <div class="success-message">{{ success }}</div>
+    }
+    
+    <div class="form-group">
+      <label>Select Teacher-Course Assignment:</label>
+      <select [(ngModel)]="selectedTeacherAssignId" class="form-control">
+        <option value="0">-- Select --</option>
+        @for (item of teacherAssignCourses; track item.id) {
+          <option [value]="item.id">
+            📖 {{ item.courseName }} | 👨‍🏫 {{ item.teacherName }} (ID: {{ item.id }})
+          </option>
+        }
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label>Select Available Time Slot:</label>
+      <select [(ngModel)]="selectedTimeTableId" class="form-control">
+        <option value="0">-- Select Slot --</option>
+        @for (slot of availableSlots; track slot.id) {
+          <option [value]="slot.id">
+            🕐 {{ slot.day }} | {{ formatTime(slot.startTime) }} - {{ formatTime(slot.endTime) }} | 🏠 {{ slot.roomNo }}
+          </option>
+        }
+      </select>
+    </div>
+    
+    <button (click)="assignSlot()" [disabled]="loading" class="assign-btn">
+      {{ loading ? 'Assigning...' : '✅ Assign to Slot' }}
+    </button>
+  </div>
+
+  <!-- Already Assigned Slots -->
+  <div class="assigned-slots">
+    <h3>📋 Already Assigned Slots</h3>
+    
+    @if (assignedSlots.length === 0) {
+      <div class="no-data">No assigned slots yet</div>
+    }
+    
+    @if (assignedSlots.length > 0) {
+      <div class="slots-grid">
+        @for (slot of assignedSlots; track slot.id) {
+          <div class="slot-card">
+            <div class="slot-day">{{ slot.day }}</div>
+            <div class="slot-time">
+              {{ formatTime(slot.startTime) }} → {{ formatTime(slot.endTime) }}
+            </div>
+            <div class="slot-room">🏠 {{ slot.roomNo }}</div>
+            <div class="slot-course">
+              📖 {{ slot.teacherAssignCourse?.courseName }}
+            </div>
+            <div class="slot-teacher">
+              👨‍🏫 {{ slot.teacherAssignCourse?.teacherName }}
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

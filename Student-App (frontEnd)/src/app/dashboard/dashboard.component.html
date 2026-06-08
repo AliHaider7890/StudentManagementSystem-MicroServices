@@ -1,0 +1,98 @@
+<div class="dashboard-container">
+  <div class="header">
+    <h2>Courses Dashboard</h2>
+    <button (click)="logout()">Logout</button>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button 
+      (click)="loadAllCourses()" 
+      [class.active]="activeTab === 'all'">
+      📚 All Courses
+    </button>
+    <button 
+      (click)="loadMyCourses()" 
+      [class.active]="activeTab === 'my'">
+      🎓 My Courses
+    </button>
+    
+    <!-- Remove All Courses Button - Only in My Courses tab -->
+    @if (activeTab === 'my' && courses.length > 0) {
+      <button 
+        (click)="removeAllCourses()" 
+        class="remove-btn"
+        [disabled]="removing">
+        🗑️ {{ removing ? 'Removing...' : 'Remove All Courses' }}
+      </button>
+    }
+  </div>
+<div class="search-section">
+  <div class="search-bar">
+    <input 
+      type="text" 
+      [(ngModel)]="searchTerm"
+      (keyup.enter)="searchCourses()"
+      placeholder="🔍 Search courses by name or description..."
+      class="search-input">
+    <button (click)="searchCourses()" class="search-btn">Search</button>
+    <button (click)="resetSearch()" class="reset-btn">Reset</button>
+  </div>
+</div>
+  @if (loading) {
+    <div class="loading">
+      <p>Loading courses...</p>
+    </div>
+  }
+
+  @if (!loading && filteredCourses.length > 0) {
+    <div class="courses-grid">
+      @for (course of filteredCourses; track course.id) {
+        <div class="course-card">
+          <h3>{{ course.courseName }}</h3>
+          <p class="description">{{ course.description }}</p>
+          <div class="details">
+            <span class="price">💰 Price: ₹{{ course.coursePrice }}</span>
+            <span class="seats">📚 Seats: {{ course.courseQuantity }}</span>
+          </div>
+          
+          <!-- ADD BUTTON - Only in All Courses tab -->
+          @if (activeTab === 'all') {
+            <div class="add-button-container">
+              <button 
+                (click)="addCourseToMyCourses(course.id)" 
+                class="add-btn"
+                [disabled]="addingCourse">
+                ➕ Add to My Courses
+              </button>
+            </div>
+          }
+          
+          <!-- REMOVE BUTTON - Only in My Courses tab -->
+          @if (activeTab === 'my') {
+            <div class="remove-button-container">
+              <button 
+                (click)="removeSingleCourse(course.id)" 
+                class="remove-single-btn"
+                [disabled]="removingCourse">
+                ❌ Remove Course
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  @if (!loading && filteredCourses.length === 0 && !error && !searchTerm) {
+    <div class="no-data">
+      <p>No courses found</p>
+    </div>
+  }
+  
+  @if (error) {
+    <div class="error-message">
+      ⚠️ {{ error }}
+    </div>
+  }
+</div>

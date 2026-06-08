@@ -1,0 +1,76 @@
+<div class="teacher-container">
+  <div class="header">
+    <div class="header-info">
+      <h2>👨‍🏫 Teacher Dashboard</h2>
+      <p class="welcome">Welcome, {{ teacherName }}</p>
+      <p class="email">{{ teacherEmail }}</p>
+    </div>
+    <button (click)="logout()" class="logout-btn">Logout</button>
+  </div>
+
+  <!-- My Timetable Section -->
+  <div class="timetable-section">
+    <h3>📅 My Teaching Schedule</h3>
+    
+    @if (loading) {
+      <div class="loading">
+        <p>Loading timetable...</p>
+      </div>
+    }
+    
+    @if (error) {
+      <div class="error-message">
+        ⚠️ {{ error }}
+      </div>
+    }
+    
+    @if (!loading && !error && timetable.length === 0) {
+      <div class="no-data">
+        <p>No classes assigned yet.</p>
+      </div>
+    }
+    
+    @if (!loading && !error && timetable.length > 0) {
+      <div class="timetable-grid">
+        @for (day of daysOrder; track day) {
+          @if (hasTimetableForDay(day)) {
+            <div class="day-column">
+              <div class="day-header">{{ day }}</div>
+              <div class="day-schedule">
+                @for (slot of getTimetableByDay(day); track slot.id) {
+                  <div class="timetable-card">
+                    <div class="time-slot">
+                      <span class="time">🕐 {{ formatTime(slot.startTime) }}</span>
+                      <span>→</span>
+                      <span class="time">{{ formatTime(slot.endTime) }}</span>
+                    </div>
+                    <div class="room-info">
+                      🏠 Room: {{ slot.roomNo }}
+                    </div>
+                    @if (slot.courseName) {
+                      <div class="course-name">
+                        📖 Course: {{ slot.courseName }}
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Stats Section -->
+  <div class="stats-section">
+    <div class="stat-card">
+      <div class="stat-number">{{ timetable.length }}</div>
+      <div class="stat-label">Total Classes</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ getUniqueDaysCount() }}</div>
+      <div class="stat-label">Teaching Days</div>
+    </div>
+  </div>
+</div>
